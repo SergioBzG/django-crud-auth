@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate # This (login) fuctionality allow create Cookies with login information user
 from django.db import IntegrityError # This error is arised when the unique constraint in the db is violated
 from .forms import TaskForm
+from .models import Task
 
 # Create your views here.
 
@@ -49,7 +50,12 @@ def signup(request):
     
 
 def tasks(request):
-    return render(request, 'tasks.html')
+    # List pending tasks by a specific user
+    tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=True) 
+    # tasks = Task.objects.filter(user=request.user)
+    return render(request, 'tasks.html', {
+        'tasks': tasks
+    })
 
 
 def create_task(request):
