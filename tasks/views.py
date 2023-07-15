@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 # These is a class that Django provides to create a form for user creation (register) and user authentication
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -56,6 +56,29 @@ def tasks(request):
     return render(request, 'tasks.html', {
         'tasks': tasks
     })
+
+
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    # task = Task.objects.get(pk=task_id)
+    if request.method == 'GET':
+        form = TaskForm(instance=task)
+        return render(request, 'task_detail.html', {
+            'task': task,
+            'form': form
+        })
+    else:
+        try:
+            # Using the TaskForm to update the task
+            form = TaskForm(request.POST, instance=task)
+            form.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'task_detail.html', {
+                'task': task,
+                'form': form,
+                'error': 'Error updating task '
+            })
 
 
 def create_task(request):
