@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate # This (login) fuctionality allow create Cookies with login information user
 from django.db import IntegrityError # This error is arised when the unique constraint in the db is violated
+from .forms import TaskForm
 
 # Create your views here.
 
@@ -52,7 +53,26 @@ def tasks(request):
 
 
 def create_task(request):
-    return render(request, 'create_task.html')
+    if request.method == 'GET':
+        return render(request, 'create_task.html', {
+            'form': TaskForm 
+        })
+    else:
+        try:
+            # I can create a task using the model Taks or using the TaskForm class:
+            form = TaskForm(request.POST)
+            new_task = form.save(commit=False) # commit=False means that the object is not saved in the db
+
+            # Using request.user I can access to user info who is requesting the url
+            new_task.user = request.user
+            new_task.save()
+
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html', {
+                'form': TaskForm,
+                'error': 'Please provide a valid data'
+            })
 
 
 def signout(request):
