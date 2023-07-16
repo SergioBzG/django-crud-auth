@@ -2,16 +2,20 @@
 
 {% block content %}
 
-<h1>Create Task</h1>
-
-{{ error }}
-
-<form action="{% url 'create_task' %}" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button>
-        Save
-    </button>
-</form>
+<main class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-5"> 
+            <form action="{% url 'create_task' %}" method="POST" class="card card-body">
+                <h1>Create Task</h1>
+                {{ error }}
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary">
+                    Save
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
 
 {% endblock %}

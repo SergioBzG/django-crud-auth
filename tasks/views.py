@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 # These is a class that Django provides to create a form for user creation (register) and user authentication
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm #Al final no usé el fromulario UserCreationForm, aunque en la vista (signup.html) lo mando.
 # This is a class that Django provides to create users
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate # This (login) fuctionality allow create Cookies with login information user
@@ -56,7 +56,8 @@ def tasks(request):
     tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=True) 
     # tasks = Task.objects.filter(user=request.user, date_completed__isnull=True)
     return render(request, 'tasks.html', {
-        'tasks': tasks
+        'tasks': tasks,
+        'title': 'Pending Tasks'
     })
 
 @login_required
@@ -65,7 +66,8 @@ def tasks_completed(request):
     tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=False).order_by('-date_completed')
     # tasks = Task.objects.filter(user=request.user)
     return render(request, 'tasks.html', {
-        'tasks': tasks
+        'tasks': tasks,
+        'title': 'Completed Tasks'
     })
 
 @login_required
