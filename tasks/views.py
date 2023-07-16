@@ -8,6 +8,7 @@ from django.contrib.auth import login, logout, authenticate # This (login) fucti
 from django.db import IntegrityError # This error is arised when the unique constraint in the db is violated
 from .forms import TaskForm
 from .models import Task
+from django.utils import timezone
 
 # Create your views here.
 
@@ -27,7 +28,7 @@ def signup(request):
             # If someting goes wrong with db
             try:
                 # Create user
-                username, password =  str(request.POST['username']), str(request.POST['password1'])
+                username, password =  request.POST['username'], request.POST['password1']
                 user = User.objects.create_user(username=username, password=password)
                 # Save user
                 user.email = request.POST['username']+'@unal.edu.co'
@@ -58,6 +59,15 @@ def tasks(request):
     })
 
 
+def tasks_completed(request):
+    # List completed tasks by a specific user
+    tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=False).order_by('-date_completed')
+    # tasks = Task.objects.filter(user=request.user)
+    return render(request, 'tasks.html', {
+        'tasks': tasks
+    })
+
+
 def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     # task = Task.objects.get(pk=task_id)
@@ -79,6 +89,21 @@ def task_detail(request, task_id):
                 'form': form,
                 'error': 'Error updating task '
             })
+        
+
+def completed_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.date_completed = timezone.now()
+        task.save()
+        return redirect('tasks')
+    
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks')
 
 
 def create_task(request):

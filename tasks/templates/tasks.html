@@ -16,7 +16,8 @@
             </a>
             <p>{{ task.description }}</p>
             <p>{{ task.user.username }}</p>
-        
+            <p>{{ task.date_completed | date:'M j  Y:i' }}</p> <!-- '|' means a pipe that allow excute another action with previous data, in this case it allows set format to date -->
+            
         </li>
     {% endfor %}
 </ul>

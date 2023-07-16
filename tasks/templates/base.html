@@ -15,7 +15,10 @@
             <!-- When we are authenticated Django creates a global object (called user) which can be accessed from all templates -->
             {% if user.is_authenticated %}
             <li>
-                <a href="{% url 'tasks' %}">Tasks</a>
+                <a href="{% url 'tasks' %}">Pending Tasks</a>
+            </li>
+            <li>
+                <a href="{% url 'tasks_completed' %}">Completed Tasks</a>
             </li>
             <li>
                 <a href="{% url 'create_task' %}">Create task</a>
