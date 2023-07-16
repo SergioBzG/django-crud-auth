@@ -9,6 +9,7 @@ from django.db import IntegrityError # This error is arised when the unique cons
 from .forms import TaskForm
 from .models import Task
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required # This decorator allow to restrict access to a view if the user is not logged in
 
 # Create your views here.
 
@@ -49,16 +50,16 @@ def signup(request):
             'error': 'Passwords do not match'
         })
     
-
+@login_required
 def tasks(request):
     # List pending tasks by a specific user
     tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=True) 
-    # tasks = Task.objects.filter(user=request.user)
+    # tasks = Task.objects.filter(user=request.user, date_completed__isnull=True)
     return render(request, 'tasks.html', {
         'tasks': tasks
     })
 
-
+@login_required
 def tasks_completed(request):
     # List completed tasks by a specific user
     tasks = Task.objects.filter(user_id=request.user.id, date_completed__isnull=False).order_by('-date_completed')
@@ -67,7 +68,7 @@ def tasks_completed(request):
         'tasks': tasks
     })
 
-
+@login_required
 def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     # task = Task.objects.get(pk=task_id)
@@ -90,7 +91,7 @@ def task_detail(request, task_id):
                 'error': 'Error updating task '
             })
         
-
+@login_required
 def completed_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
@@ -98,14 +99,14 @@ def completed_task(request, task_id):
         task.save()
         return redirect('tasks')
     
-
+@login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
         task.delete()
         return redirect('tasks')
 
-
+@login_required
 def create_task(request):
     if request.method == 'GET':
         return render(request, 'create_task.html', {
@@ -128,7 +129,7 @@ def create_task(request):
                 'error': 'Please provide a valid data'
             })
 
-
+@login_required
 def signout(request):
     # Close sesion
     logout(request)
